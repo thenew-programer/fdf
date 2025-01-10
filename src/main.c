@@ -6,179 +6,125 @@
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 10:19:38 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/04 14:20:40 by ybouryal         ###   ########.fr       */
+/*   Updated: 2025/01/10 10:58:50 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
+#include "libft.h"
 #include "mlx.h"
 
-// int	main(int ac, char **av)
-// {
-// 	t_point	*map;
+int	main(int ac, char **av)
+{
+	t_point		*map;
+	t_mlx_data	*vars;
+
+	if (ac != 2)
+	{
+		ft_putendl_fd("Usage: ./fdf <filename>", 2);
+		return (1);
+	}
+	map = parser(ac, av);
+	if (map == NULL)
+		return (1);
+	map_print(map);
+	vars = init_display();
+	if (!vars)
+		return (map_free(&map), 1);
+	vars->map = &map;
+	draw_shape(vars);
+	mlx_loop(vars->mlx_ptr);
+	map_free(&map);
+	return (0);
+}
+
+// #include <stdio.h>
+// #include <stdlib.h>
 //
-// 	if (ac != 2)
-// 		return (1);
-// 	map = parser(ac, av);
-// 	if (map == NULL)
-// 		return (1);
-// 	map_print(map);
-// 	map_free(&map);
-// 	return (0);
+// #define WIN_WIDTH 800
+// #define WIN_HEIGHT 600
+//
+// // Matrix dimensions
+// #define ROWS 5
+// #define COLS 5
+//
+// // Matrix to draw (1 for filled square, 0 for empty space)
+// int matrix[ROWS][COLS] = {
+//     {1, 0, 1, 0, 1},
+//     {0, 1, 0, 1, 0},
+//     {1, 1, 1, 1, 1},
+//     {0, 1, 0, 1, 0},
+//     {1, 0, 1, 0, 1}
+// };
+//
+// // Function to draw the border of a square
+// void draw_square_border(void *mlx, void *win, int x, int y, int size, int color)
+// {
+//     // Draw top and bottom borders
+//     for (int i = 0; i < size; i++)
+//     {
+//         mlx_pixel_put(mlx, win, x + i, y, color);               // Top border
+//         mlx_pixel_put(mlx, win, x + i, y + size - 1, color);   // Bottom border
+//     }
+//
+//     // Draw left and right borders
+//     for (int j = 0; j < size; j++)
+//     {
+//         mlx_pixel_put(mlx, win, x, y + j, color);              // Left border
+//         mlx_pixel_put(mlx, win, x + size - 1, y + j, color);  // Right border
+//     }
 // }
-int	get_opposite(int color)
-{
-	int	red;
-	int	blue;
-	int	green;
-	int	alpha;
-
-	alpha = (color >> 24) & 0xFF;
-	red = (color >> 16) & 0xFF;
-	green = (color >> 8) & 0xFF;
-	blue = (color & 0xFF);
-	red = 0xFF - red;
-	green = 0xFF - green;
-	blue = 0xFF - blue;
-	return (alpha << 24 | red << 16 | green << 8 | blue);
-}
-
-void	pixel_put(t_data *data, int x, int y, int color)
-{
-	char	*dst;
-
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-	*(unsigned int *)dst = color;
-}
-
-void	draw_square(t_data *img, int init_x, int init_y, int color, int w, int h)
-{
-	int	i;
-	int	j;
-	for (i = 0; i < w; i++)
-	{
-		for (j = 0; j < h; j++)
-		{
-			if (i <= 5 || i >= w - 5)
-				pixel_put(img, init_x + i, init_y + j, color);
-			if (j <= 5 || j >= h - 5)
-				pixel_put(img, init_x + i, init_y + j, color);
-
-		}
-	}
-}
-
-void	draw_circle(t_data *img, int init_x, int init_y, int color, int radius)
-{
-	int	diameter = 2 * radius + 1;
-	int	x;
-	int	y;
-
-	x = 0;
-	init_y = init_y - radius;
-	init_x = init_x - radius;
-	while (x < diameter)
-	{
-		y = 0;
-		while (y < diameter)
-		{
-			int dx = x - radius;
-			int dy = y - radius;
-			if (sqrt(dx * dx + dy * dy) >= radius - 5 && sqrt(dx * dx + dy * dy) <= radius)
-				pixel_put(img, init_x + x, init_y + y, get_opposite(color));
-			y++;
-		}
-		x++;
-	}
-}
-
-void	draw_circles(t_data *img, int init_x, int init_y, int color, int spacing, int radius, int w, int h)
-{
-	for (int r = spacing; r < fmin(w, h); r += spacing)
-	{
-		draw_circle(img, init_x + r, init_y + r, color , radius);
-	}
-}
-
-int	add_shade(double distance, int color)
-{
-	int	red;
-	int	blue;
-	int	green;
-	int	alpha;
-
-	if (distance < 0.0)
-		distance = 0.0;
-	if (distance > 1.0)
-		distance = 1.0;
-	alpha = (color >> 24) & 0xFF;
-	red = (color >> 16) & 0xFF;
-	green = (color >> 8) & 0xFF;
-	blue = (color & 0xFF);
-	red = (int)(red * (1.0 - distance));
-	green = (int)(green * (1.0 - distance));
-	blue = (int)(blue * (1.0 - distance));
-	return (alpha << 24 | red << 16 | green << 8 | blue);
-}
-
-typedef struct s_vars
-{
-	void	*mlx;
-	void	*win;
-	t_data	*img;
-}	t_vars;
-int	keyhook(int keycode, t_vars *vars)
-{
-	if (keycode == 65307)
-	{
-		mlx_destroy_image(vars->mlx, vars->img->img);
-		mlx_destroy_window(vars->mlx, vars->win);
-		mlx_destroy_display(vars->mlx);
-		free(vars->mlx);
-		exit(0);
-	}
-	printf("keycode = %d\n", keycode);
-	return (0);
-}
-
-int	mousehook(int button, int x, int y, t_vars *vars)
-{
-	if ((x >= 350 && x <= 400) && (y >= 0 && y <= 10) && button)
-	{
-		mlx_destroy_image(vars->mlx, vars->img->img);
-		mlx_destroy_window(vars->mlx, vars->win);
-		mlx_destroy_display(vars->mlx);
-		free(vars->mlx);
-		exit(0);
-	}
-	printf("x = %d - y = %d [button = %d]\n", x, y, button);
-	draw_circle(vars->img, x, y, add_shade(0.0, 0x00FF0000), 20);
-	mlx_put_image_to_window(vars->mlx, vars->win, vars->img->img, 0, 0);
-	return (0);
-}
-int	main()
-{
-	void	*mlx;
-	void	*mlx_window;
-	t_data	img;
-	t_vars	vars;
-
-	mlx = mlx_init();
-	mlx_window = mlx_new_window(mlx, 400, 400, "FdF");
-	img.img = mlx_new_image(mlx, 1200, 700);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-	// draw_square(&img, 100, 50, add_shade(0.5, 0x00111111), 1000, 600);
-	// mlx_put_image_to_window(mlx, mlx_window, img.img, 0, 0);
-	// draw_square(&img, 350, 200, add_shade(0.5, 0x00FFFFFF), 500, 300);
-	// mlx_put_image_to_window(mlx, mlx_window, img.img, 0, 0);
-	// draw_circle(&img, 600, 350, add_shade(0.0, 0x00FF0000), 80);
-	// draw_circles(&img, 100, 50, add_shade(0.5, 0x00FF6F61), 10, 50, 1000, 600);
-	// mlx_put_image_to_window(mlx, mlx_window, img.img, 0, 0);
-	vars.mlx = mlx;
-	vars.win = mlx_window;
-	vars.img = &img;
-	mlx_key_hook(mlx_window, keyhook, &vars);
-	mlx_mouse_hook(mlx_window, mousehook, &vars);
-	mlx_loop(mlx);
-}
-
+//
+// int main()
+// {
+//     void *mlx;
+//     void *win;
+//
+//     // Initialize MiniLibX
+//     mlx = mlx_init();
+//     if (!mlx)
+//     {
+//         fprintf(stderr, "Failed to initialize MiniLibX\n");
+//         return (1);
+//     }
+//
+//     // Create a window
+//     win = mlx_new_window(mlx, WIN_WIDTH, WIN_HEIGHT, "Dynamic Matrix with Dynamic Spacing");
+//     if (!win)
+//     {
+//         fprintf(stderr, "Failed to create window\n");
+//         return (1);
+//     }
+//
+//     // Calculate square size and spacing
+//     int square_size_width = WIN_WIDTH / COLS / 2;
+//     int square_size_height = WIN_HEIGHT / ROWS / 2;
+//     int square_size = (square_size_width < square_size_height) ? square_size_width : square_size_height;
+//
+//     // int spacing = square_size / 5;
+// 	int	spacing = 0;
+//
+//     // Calculate matrix dimensions
+//     int matrix_width = (COLS * square_size);
+//     int matrix_height = (ROWS * square_size);
+//
+//     // Calculate offsets to center the matrix
+//     int offset_x = (WIN_WIDTH - matrix_width) / 2;
+//     int offset_y = (WIN_HEIGHT - matrix_height) / 2;
+//
+//     // Draw the matrix
+//     for (int row = 0; row < ROWS; row++)
+//     {
+//         for (int col = 0; col < COLS; col++)
+//         {
+// 			int x = offset_x + col * (square_size + spacing);
+// 			int y = offset_y + row * (square_size + spacing);
+// 			draw_square_border(mlx, win, x, y, square_size, 0x00FF00); // Green border
+//         }
+//     }
+//
+//     // Run the event loop
+//     mlx_loop(mlx);
+//
+//     return (0);
+// }

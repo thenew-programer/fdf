@@ -16,10 +16,13 @@
 
 int	close_window(t_mlx_data *data)
 {
+	mlx_destroy_image(data->mlx_ptr, data->img_ptr->img);
+	free(data->img_ptr);
 	mlx_destroy_window(data->mlx_ptr, data->win_ptr);
 	mlx_destroy_display(data->mlx_ptr);
 	free(data->mlx_ptr);
 	map_free(data->map);
+	free(data);
 	exit(0);
 }
 
@@ -27,10 +30,5 @@ int	keyhook(int keycode, t_mlx_data *data)
 {
 	if (keycode == XK_Escape)
 		close_window(data);
-	return (0);
-}
-
-int	mousehook(int button, int x, int y, t_mlx_data *data)
-{
 	return (0);
 }

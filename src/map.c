@@ -6,7 +6,7 @@
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 10:41:58 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/04 11:08:11 by ybouryal         ###   ########.fr       */
+/*   Updated: 2025/01/07 10:22:56 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ void	map_print(t_point *map)
 		return ;
 	while (map)
 	{
-		printf("%2d", map->z);
+		printf("%2d:%d,%d", map->z, map->x, map->y);
 		if (map->next == NULL)
 		{
 			printf("\n");
@@ -95,14 +95,49 @@ void	map_print(t_point *map)
 	}
 }
 
-// int main()
+int	map_cols(t_point *map)
+{
+	int	x;
+
+	x = 0;
+	while (map)
+	{
+		if (!map->next || map->next->y != map->y)
+			return (x);
+		x++;
+		map = map->next;
+	}
+	return (-1);
+}
+
+int	map_rows(t_point *map)
+{
+	int	y;
+
+	y = 0;
+	while (map)
+	{
+		if (!map->next)
+			return (++y);
+		if (map->next->y != map->y)
+			y++;
+		map = map->next;
+	}
+	return (-1);
+}
+
+// int main(int ac, char **av)
 // {
 // 	t_point	*map;
+// 	int		x;
+// 	int		y;
 //
-// 	pointadd_back(&map, point_new(0, 0, 0, NULL));
-// 	pointadd_back(&map, point_new(1, 0, 0, NULL));
-// 	pointadd_back(&map, point_new(0, 1, 0, NULL));
-// 	pointadd_back(&map, point_new(1, 1, 1, NULL));
+// 	map = parser(ac, av);
+// 	if (map == NULL)
+// 		return (1);
 // 	map_print(map);
+// 	x = map_x(map);
+// 	y = map_y(map);
+// 	printf("x = %d - y = %d\n", x, y);
 // 	map_free(&map);
 // }

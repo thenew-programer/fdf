@@ -11,34 +11,35 @@
 /* ************************************************************************** */
 
 #include "fdf.h"
+#include "libft.h"
 
 int	parse_color(char *str)
 {
 	int		result;
-	char	*hex;
-	char	*pos;
+	char	**strs;
 	int		i;
 
 	result = 0;
-	hex = "0123456789ABCDEF";
 	if (!str)
 		return (0x00FFFFFF);
-	while (ft_isdigit(*str) && *str)
-		str++;
-	if (*str != ',')
-		return (0x00FFFFFF);
-	if (*(++str) == '0' && *(str + 1) == 'x')
-		str += 2;
-	i = 8;
-	while (--i >= 0)
+	strs = ft_split(str, ',');
+	if (!strs || !strs[1])
+		return (free_strs(strs), 0x00FFFFFF);
+	if (strs[1][0] != '0' && strs[1][1] != 'x')
+		return (free_strs(strs), 0x00FFFFFF);
+	i = 1;
+	while (strs[1][++i])
 	{
-		pos = ft_strchr(hex, *str);
-		if (!pos || !*str)
-			return (-1);
-		result = (result << 4 ) | (pos - hex);
-		str++;
+		if (strs[1][i] >= '0' && strs[1][i] <= '9')
+			result = (result << 4 ) | (strs[1][i] - '0');
+		else if (strs[1][i] >= 'A' && strs[1][i] <= 'F')
+			result = (result << 4 ) | (strs[1][i] - 'A' + 10);
+		else if (strs[1][i] >= 'a' && strs[1][i] <= 'f')
+			result = (result << 4 ) | (strs[1][i] - 'a' + 10);
+		else
+			return (free_strs(strs), -1);
 	}
-	return (result);
+	return (free_strs(strs), result);
 }
 
 void	construct_map(t_point **map, char **strs, int y)
@@ -55,7 +56,7 @@ void	construct_map(t_point **map, char **strs, int y)
 		color = parse_color(strs[x]);
 		if (color == -1)
 		{
-			perror("fdf: map khasra\n");
+			ft_putendl_fd("fdf: map khasra color machi hwa hadak", 2);
 			map_free(map);
 			exit(1);
 		}
@@ -93,17 +94,17 @@ t_point	*parser(int ac, char **av)
 	}
 	return (map);
 }
-// int main()
+// int main(void)
 // {
-// 	char	*str;
-// 	int		color;
+//     char *example1 = "10,0x0000ff00";
+//     char *example2 = "0,0x000FAB12";
+//     char *example3 = "42,0xinvalid";
+//     char *example4 = "hello,0xx";
 //
-// 	str = "10,0x00FF00FF";
-// 	color = parse_color(str);
-// 	if (color == 0x00FF00FF)
-// 		printf("color = %#010X - OK\n", color);
-// 	if (color == 0x00FFFFFF)
-// 		printf("color = %#010X - KO\n", color);
-// 	if (color == -1)
-// 		printf("An error ocurred\n");
+//     printf("Parsed color 1: %#010X\n", parse_color(example1)); // 0x00FF00
+//     printf("Parsed color 2: %#010X\n", parse_color(example2)); // 0x0FAB12
+//     printf("Parsed color 3: %#010X\n", parse_color(example3)); // 0xFFFFFF
+//     printf("Parsed color 4: %#010X\n", parse_color(example4)); // 0xFFFFFF
+//
+//     return 0;
 // }
