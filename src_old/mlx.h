@@ -1,14 +1,31 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   mlx.h                                              :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/11 18:59:51 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/11 19:00:52 by ybouryal         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/*
+** mlx.h for MinilibX in 
+** 
+** Made by Charlie Root
+** Login   <ol@epitech.net>
+** 
+** Started on  Mon Jul 31 16:37:50 2000 Charlie Root
+** Last update Tue May 15 16:23:28 2007 Olivier Crouzet
+*/
+
+/*
+**   MinilibX -  Please report bugs
+*/
+
+
+/*
+** FR msg - FR msg - FR msg
+**
+** La MinilibX utilise 2 librairies supplementaires qu'il
+**      est necessaire de rajouter a la compilation :
+**   -lmlx -lXext -lX11
+**
+** La MinilibX permet le chargement des images de type Xpm.
+** Notez que cette implementation est incomplete.
+** Merci de communiquer tout probleme de chargement d'image
+** de ce type.
+*/
+
 
 #ifndef MLX_H
 

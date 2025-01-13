@@ -21,6 +21,8 @@ void	isometric_projection(t_point *p)
 		return ;
 	prev_x = p->x;
 	prev_y = p->y;
-	p->x = (prev_x - prev_y) * cos(ISO_ANGLE);
-	p->y = (prev_x + prev_y) * sin(PI / 4.0) - p->z;
+	p->x = prev_x * cos(ISO_ANGLE) + prev_y * cos(ISO_ANGLE + 2) + p->z * cos(ISO_ANGLE - 2);
+	p->y = prev_x * sin(ISO_ANGLE) + prev_y * sin(ISO_ANGLE + 2) + p->z * sin(ISO_ANGLE - 2);
+	// p->x = (prev_x - prev_y) * cos(ISO_ANGLE);
+	// p->y = (prev_x + prev_y) * sin(ISO_ANGLE) - p->z;
 }

@@ -5,126 +5,77 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/04 10:19:38 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/10 10:58:50 by ybouryal         ###   ########.fr       */
+/*   Created: 2025/01/11 19:00:58 by ybouryal          #+#    #+#             */
+/*   Updated: 2025/01/13 11:19:56 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-#include "libft.h"
 #include "mlx.h"
+
+void	free_fdf_data(t_fdf *data)
+{
+	free_graphics(data);
+	if (data)
+	{
+		if (data->mlx_ptr)
+			free(data->mlx_ptr);
+		if (data->win_ptr)
+			free(data->win_ptr);
+		if (data->img_ptr)
+			free(data->img_ptr);
+		if (data->w_title)
+			free(data->w_title);
+		if (data->map)
+			free_map(data->map, data);
+		if (data->screen)
+			free(data->screen);
+		if (data->menu)
+		{
+			if (data->menu->img_ptr)
+				free(data->menu->img_ptr);
+			free(data->menu);
+		}
+		free(data);
+	}
+}
+
+t_fdf	*init(void)
+{
+	t_fdf	*data;
+
+	data = (t_fdf *)malloc(sizeof(t_fdf));
+	if (!data)
+		die(MALLOC_ERR, data);
+	data->mlx_ptr = NULL;
+	data->win_ptr = NULL;
+	data->img_ptr = NULL;
+	data->w_title = NULL;
+	data->screen = NULL;
+	data->menu = NULL;
+	data->map = NULL;
+	data->cols = 0;
+	data->rows = 0;
+	return (data);
+}
 
 int	main(int ac, char **av)
 {
-	t_point		*map;
-	t_mlx_data	*vars;
+	t_fdf	*data;
 
-	if (ac != 2)
-	{
-		ft_putendl_fd("Usage: ./fdf <filename>", 2);
-		return (1);
-	}
-	map = parser(ac, av);
-	if (map == NULL)
-		return (1);
-	map_print(map);
-	vars = init_display();
-	if (!vars)
-		return (map_free(&map), 1);
-	vars->map = &map;
-	draw_shape(vars);
-	mlx_loop(vars->mlx_ptr);
-	map_free(&map);
+	data = init();
+	if (ac < 2)
+		die(USAGE_ERR, data);
+	check_file_ext(av[1], data);
+	if (!check_map(av[1], data))
+		die(MAP_FORMAT_ERR, data);
+	data->map = parser(av[1], data);
+	data->w_title = ft_strjoin("Fdf - ", av[1]);
+	printf("map in file %s is valid\n", data->w_title);
+	printf("Map Width = %d\nMap Height = %d\n", data->cols, data->rows);
+	init_graphics(data);
+	draw_menu(data);
+	mlx_loop_hook(data->mlx_ptr, render, data);
+	mlx_loop(data->mlx_ptr);
 	return (0);
 }
-
-// #include <stdio.h>
-// #include <stdlib.h>
-//
-// #define WIN_WIDTH 800
-// #define WIN_HEIGHT 600
-//
-// // Matrix dimensions
-// #define ROWS 5
-// #define COLS 5
-//
-// // Matrix to draw (1 for filled square, 0 for empty space)
-// int matrix[ROWS][COLS] = {
-//     {1, 0, 1, 0, 1},
-//     {0, 1, 0, 1, 0},
-//     {1, 1, 1, 1, 1},
-//     {0, 1, 0, 1, 0},
-//     {1, 0, 1, 0, 1}
-// };
-//
-// // Function to draw the border of a square
-// void draw_square_border(void *mlx, void *win, int x, int y, int size, int color)
-// {
-//     // Draw top and bottom borders
-//     for (int i = 0; i < size; i++)
-//     {
-//         mlx_pixel_put(mlx, win, x + i, y, color);               // Top border
-//         mlx_pixel_put(mlx, win, x + i, y + size - 1, color);   // Bottom border
-//     }
-//
-//     // Draw left and right borders
-//     for (int j = 0; j < size; j++)
-//     {
-//         mlx_pixel_put(mlx, win, x, y + j, color);              // Left border
-//         mlx_pixel_put(mlx, win, x + size - 1, y + j, color);  // Right border
-//     }
-// }
-//
-// int main()
-// {
-//     void *mlx;
-//     void *win;
-//
-//     // Initialize MiniLibX
-//     mlx = mlx_init();
-//     if (!mlx)
-//     {
-//         fprintf(stderr, "Failed to initialize MiniLibX\n");
-//         return (1);
-//     }
-//
-//     // Create a window
-//     win = mlx_new_window(mlx, WIN_WIDTH, WIN_HEIGHT, "Dynamic Matrix with Dynamic Spacing");
-//     if (!win)
-//     {
-//         fprintf(stderr, "Failed to create window\n");
-//         return (1);
-//     }
-//
-//     // Calculate square size and spacing
-//     int square_size_width = WIN_WIDTH / COLS / 2;
-//     int square_size_height = WIN_HEIGHT / ROWS / 2;
-//     int square_size = (square_size_width < square_size_height) ? square_size_width : square_size_height;
-//
-//     // int spacing = square_size / 5;
-// 	int	spacing = 0;
-//
-//     // Calculate matrix dimensions
-//     int matrix_width = (COLS * square_size);
-//     int matrix_height = (ROWS * square_size);
-//
-//     // Calculate offsets to center the matrix
-//     int offset_x = (WIN_WIDTH - matrix_width) / 2;
-//     int offset_y = (WIN_HEIGHT - matrix_height) / 2;
-//
-//     // Draw the matrix
-//     for (int row = 0; row < ROWS; row++)
-//     {
-//         for (int col = 0; col < COLS; col++)
-//         {
-// 			int x = offset_x + col * (square_size + spacing);
-// 			int y = offset_y + row * (square_size + spacing);
-// 			draw_square_border(mlx, win, x, y, square_size, 0x00FF00); // Green border
-//         }
-//     }
-//
-//     // Run the event loop
-//     mlx_loop(mlx);
-//
-//     return (0);
-// }

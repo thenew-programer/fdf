@@ -6,7 +6,7 @@
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/05 18:19:43 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/07 10:11:57 by ybouryal         ###   ########.fr       */
+/*   Updated: 2025/01/11 18:38:54 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "fdf.h"
 #include <errno.h>
 
-static void	display_error(t_mlx_data *vars)
+static void	display_error(t_fdf *vars)
 {
 	errno = ENOMEM;
 	perror("fdf: ");
@@ -36,7 +36,7 @@ static void	display_error(t_mlx_data *vars)
 	}
 }
 
-static void	init_vars(t_mlx_data *vars)
+static void	init_vars(t_fdf *vars)
 {
 	vars->img_ptr = NULL;
 	vars->mlx_ptr = NULL;
@@ -44,11 +44,11 @@ static void	init_vars(t_mlx_data *vars)
 	vars->map = NULL;
 }
 
-t_mlx_data	*init_display(void)
+t_fdf	*init_display(void)
 {
-	t_mlx_data	*vars;
+	t_fdf	*vars;
 
-	vars = (t_mlx_data *)malloc(sizeof(t_mlx_data));
+	vars = (t_fdf *)malloc(sizeof(t_fdf));
 	if (!vars)
 		return (display_error(vars), NULL);
 	init_vars(vars);

@@ -5,127 +5,96 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/06 22:13:58 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/10 10:58:45 by ybouryal         ###   ########.fr       */
+/*   Created: 2025/01/12 09:14:12 by ybouryal          #+#    #+#             */
+/*   Updated: 2025/01/13 11:05:36 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "colors.h"
 #include "fdf.h"
 #include "mlx.h"
 
-
-t_point	*project(t_point *p)
+void	pixel_put(t_img_data *data, int x, int y, int color)
 {
-	isometric_projection(p);
-	return (p);
+	char	*dst;
+
+	if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT)
+	{
+		dst = data->addr + (y * data->line_length + x * data->bpp / 8);
+		*(unsigned int *)dst = color;
+	}
 }
 
-
-void	draw_line(t_mlx_data *vars, t_point *p1, t_point *p2)
+static void	draw_line(t_fdf *data, t_point p1, t_point p2)
 {
-	int	dx;
-	int	dy;
-	int	sx;
-	int	sy;
-	int	err[2];
+	t_point	delta;
+	t_point	sign;
+	int		err[2];
 
-	sx = -2;
-	sy = -2;
-	dx = abs(p2->x - p1->x);
-	dy = abs(p2->y - p1->y);
-	err[0] = dx - dy;
-	if (p1->x < p2->x)
-		sx = 2;
-	if (p1->y < p2->y)
-		sy = 2;
-	while (2)
+	delta.x = abs(p2.x - p1.x);
+	delta.y = abs(p2.y - p1.y);
+	sign.x = p1.x < p2.x ? 1 : -1;
+	sign.y = p1.y < p2.y ? 1 : -1;
+	err[0] = delta.x - delta.y;
+	while (p1.x != p2.x || p1.y != p2.y)
 	{
-		pixel_put(vars->img_ptr, p1->x, p1->y, p1->color);
-		if (p1->x == p2->x && p1->y == p2->y)
-			break;
+		// pixel_put(data, cur.x, cur.y, get_color(cur, p1, p2, delta));
+		// pixel_put(data->img_ptr, p1.x, p1.y, p1.color);
+		pixel_put(data->img_ptr, p1.x, p1.y, p1.color);
 		err[1] = err[0] * 2;
-		if (err[1] > -dy)
+		if (err[1] > -delta.y)
 		{
-			err[0] -= dy;
-			p1->x += sx;
+			err[0] -= delta.y;
+			p1.x += sign.x;
 		}
-		if (err[1] < dx)
+		if (err[1] < delta.x)
 		{
-			err[0] += dx;
-			p1->y += sy;
+			err[0] += delta.x;
+			p1.y += sign.y;
 		}
 	}
-	free(p1);
-	free(p2);
 }
 
-void	draw_shape(t_mlx_data *vars)
+void	draw_background(t_fdf *data)
 {
-	t_point	*curr;
-	t_point	*next_row;
-	t_point	*under;
 	int	x;
 	int	y;
 
-	draw_info(vars);
-	curr = *vars->map;
 	y = 0;
-	while (y < vars->rows)
+	while (y < HEIGHT)
 	{
 		x = 0;
-		next_row = curr;
-		while (x < vars->cols)
+		while (x < WIDTH - MENU_WIDTH)
 		{
-			if (!curr)
-				return ;
-			if (curr->next && x < vars->cols)
-				// draw_line(vars, project(scale(vars, curr, x, y)), project(scale(vars, curr->next, x + 1, y)));
-				draw_line(vars, scale(vars, curr, x, y), scale(vars, curr->next, x + 1, y));
-				// draw_line(vars, project(curr), project(curr->next));
-
-			if (next_row && y < vars->rows)
-			{
-				under = next_row;
-				for (int i = 0; i < vars->cols; i++)
-				{
-					if (!under)
-						break;
-					under = under->next;
-				}
-				if (under)
-				{
-					// printf("draw_shape(): drawing vertically\n");
-					// draw_line(vars, project(curr), project(under));
-					draw_line(vars, scale(vars, curr, x, y), scale(vars, under, x, y + 1));
-					// draw_line(vars, project(scale(vars, curr, x, y)), project(scale(vars, under, x, y + 1)));
-				}
-			}
-			mlx_put_image_to_window(vars->mlx_ptr, vars->win_ptr, vars->img_ptr->img, MENU_WIDTH, 0);
+			pixel_put(data->img_ptr, x, y, BACKGROUND);
 			x++;
-			curr = curr->next;
 		}
 		y++;
 	}
 }
 
-void	draw_info(t_mlx_data *vars)
+void	draw(t_fdf *data)
 {
-	int	size_w;
-	int	size_h;
+	int	x;
+	int	y;
 
-	vars->cols = map_cols(*vars->map);
-	vars->rows = map_rows(*vars->map);
-	size_w = (WIDTH - MENU_WIDTH) / vars->cols / 2;
-	size_h = HEIGHT / vars->rows / 2;
-	if (size_w >= size_h)
-		vars->size = size_h;
-	else
-		vars->size = size_w;
-	vars->offset_x = ((WIDTH - MENU_WIDTH) - vars->size * vars->cols) / 2;
-	vars->offset_y = (HEIGHT - vars->size * vars->rows) / 2;
-	if (vars->offset_x < 0)
-		vars->offset_x = 0;
-	if (vars->offset_y < 0)
-		vars->offset_y = 0;
+	draw_background(data);
+	y = 0;
+	while (y < data->rows)
+	{
+		x = 0;
+		while (x < data->cols)
+		{
+			if (x != data->cols - 1)
+				draw_line(data, project(data, data->map[y][x]),
+								project(data, data->map[y][x + 1]));
+			if (y != data->rows - 1)
+				draw_line(data, project(data, data->map[y][x]),
+								project(data, data->map[y + 1][x]));
+			x++;
+		}
+		y++;
+	}
+	mlx_put_image_to_window(data->mlx_ptr, data->win_ptr,
+							data->img_ptr->img, MENU_WIDTH, 0);
 }
-
