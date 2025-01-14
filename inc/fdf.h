@@ -5,96 +5,186 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/04 10:20:11 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/10 10:42:21 by ybouryal         ###   ########.fr       */
+/*   Created: 2025/01/11 18:57:45 by ybouryal          #+#    #+#             */
+/*   Updated: 2025/01/14 21:53:44 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FDF_H
 # define FDF_H
 
-# include <unistd.h>
-# include <stdio.h>
-# include <fcntl.h>
-# include <stdlib.h>
-# include <math.h>
-# include <stdarg.h>
-# include "libft.h"
 # include "mlx.h"
+# include "colors.h"
+# include "err_msg.h"
+# include "libft.h"
 
-# define TITLE		"FdF"
-# define WIDTH		800
-# define HEIGHT		800	
-# define MENU_WIDTH	20
-# define ANGLE		30
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <math.h>
+# include <errno.h>
+# include <X11/keysym.h>
 
-typedef struct s_data
+# define WIDTH		1300
+# define HEIGHT		700
+# define MENU_WIDTH	220
+# define PI			3.142857142857143
+
+typedef enum e_bool
 {
-	void			*img;
-	char			*addr;
-	int				bits_per_pixel;
-	int				line_length;
-	int				endian;
-	struct s_data	*next;
-}	t_data;
+	FALSE,
+	TRUE
+}	t_bool;
+
+typedef enum e_projection
+{
+	ISOMETRIC,
+	PARALLEL,
+	CONIC
+}	t_projection;
+
+typedef enum e_xevent
+{
+	ON_KEYDOWN = 2,
+	ON_KEYUP = 3,
+	ON_DESTROY = 17,
+	ON_EXPOSE = 12,
+}	t_xevent;
+
+typedef struct s_img_data
+{
+	char	*addr;
+	void	*img;
+	int		bpp;
+	int		line_length;
+	int		endian;
+}	t_img_data;
+
+typedef struct s_menu_data
+{
+	t_img_data	*img_ptr;
+	int			top_margin;
+	int			left_margin;
+}	t_menu;
+
+typedef struct s_keys
+{
+	int	pk_shift;
+	int	pk_ctrl;
+	int	pk_key;
+}	t_keys;
 
 typedef struct s_point
 {
-	int				x;
-	int				y;
-	int				z;
-	int				color;
-	struct s_point	*next;
+	int	x;
+	int	y;
+	int	z;
+	int	color;
 }	t_point;
 
-typedef struct s_mlx_data
+typedef struct s_screen
 {
-	void	*mlx_ptr;
-	void	*win_ptr;
-	t_data	*img_ptr;
-	t_point	**map;
-	int		rows;
-	int		cols;
-	int		size;
-	int		offset_x;
-	int		offset_y;
-}	t_mlx_data;
+	t_projection	projection;
+	int				zoom;
+	double			alpha;
+	double			beta;
+	double			gamma;
+	double			angle;
+	float			z_div;
+	int				depth;
+	int				offset_x;
+	int				offset_y;
+}	t_screen;
 
-/* -----------------IO----------------- */
-int	open_file(char *filename);
+typedef struct s_fdf
+{
+	void		*mlx_ptr;
+	void		*win_ptr;
+	t_img_data	*img_ptr;
+	t_screen	*screen;
+	t_keys		*keys;
+	t_menu		*menu;
+	t_point		**map;
+	char		*w_title;
+	int			cols;
+	int			rows;
+}	t_fdf;
 
-/* ----------------Utils--------------- */
-void	free_strs(char **strs);
-t_point	*scale(t_mlx_data *vars, t_point *p, int x, int y);
+/* Functions Prototype */
 
-/* -----------------map---------------- */
-t_point	*point_new(int x, int y, int z, int color);
-void	pointadd_back(t_point **head, t_point *new_node);
-int		map_size(t_point *map);
-void	map_free(t_point **map);
-t_point	*point_last(t_point *map);
-void	map_print(t_point *map);
-int		map_cols(t_point *map);
-int		map_rows(t_point *map);
+/* ------------------------------err.c------------------------------------- */
+void	die(char *err, t_fdf *data);
 
-/* ---------------parser-------------- */
-void 	construct_map(t_point **map, char **strs, int y);
-t_point *parser(int ac, char **av);
+/* ------------------------------utils.c----------------------------------- */
+void	free_split_strs(char **strs, char *line);
+int		open_file(char *filename, t_fdf *data);
+int		min(int x, int y);
 
-/* ---------------hooks--------------- */
-int		keyhook(int keycode, t_mlx_data *data);
-int		close_window(t_mlx_data *data);
+/* ------------------------------map.c------------------------------------- */
+t_point	**init_map(t_fdf *data);
+void	free_map(t_point **map, t_fdf *data);
+void	init_point(t_point *p, int *coor, int z, int color);
 
-/* --------------display-------------- */
-t_mlx_data	*init_display(void);
-void		pixel_put(t_data *data, int x, int y, int color);
+/* -----------------------------parser.c----------------------------------- */
+t_point	**parser(char *filename, t_fdf *data);
+t_bool	check_map(char *filename, t_fdf *data);
+t_bool	check_file_ext(char *filename, t_fdf *data);
 
-/* ---------------draw---------------- */
-void	draw_info(t_mlx_data *vars);
-void	draw(t_mlx_data *vars, t_point *p);
-void	draw_shape(t_mlx_data *vars);
+/* ----------------------------graphics.c---------------------------------- */
+void	free_graphics(t_fdf *data);
+void	init_graphics(t_fdf *data);
 
-/* -----------projections------------- */
-void	isometric_projection(t_point *p);
+/* ------------------------------hooks.c----------------------------------- */
+int		close_window(t_fdf *data);
+int		key_press(int keycode, t_fdf *data);
+int		key_release(int keycode, t_fdf *data);
 
+/* ------------------------------main.c-------------------------------------*/
+void	free_fdf_data(t_fdf *data);
+
+/* ------------------------------draw.c-------------------------------------*/
+void	pixel_put(t_img_data *data, int x, int y, int color);
+void	draw_shape(t_fdf *data);
+void	draw_menu(t_fdf *data);
+
+/* ----------------------------project.c------------------------------------*/
+t_point	project(t_fdf *data, t_point p);
+
+/* ----------------------------renderer.c-----------------------------------*/
+int		draw(t_fdf *data);
+int		render(t_fdf *data);
+
+/* ----------------------------bonus_1.c------------------------------------*/
+void	rotate(t_fdf *data);
+void	translate(t_fdf *data);
+void	projection(t_fdf *data);
+void	zoom(t_fdf *data);
+
+/* ----------------------------bonus_2.c------------------------------------*/
+void	altitude(t_fdf *data);
+void	depth(t_fdf *data);
+void	reset(t_fdf *data);
+int		close_window(t_fdf *data);
+int		cross_exit(t_fdf *data);
+
+/* ----------------------------menu_help_1.c--------------------------------*/
+void	header_help(t_fdf *data);
+void	rotate_help(t_fdf *data);
+void	project_help(t_fdf *data);
+void	translate_help(t_fdf *data);
+
+/* ----------------------------menu_help_1.c--------------------------------*/
+void	zoom_help(t_fdf *data);
+void	reset_help(t_fdf *data);
+void	exit_help(t_fdf *data);
+
+/* -------------------------------color.c-----------------------------------*/
+int		p_color(t_point *p1, t_point *p2);
+int		get_color(char **strs, int x);
+
+/* -------------------------------dealloc.c---------------------------------*/
+void	free_graphics(t_fdf *data);
+void	free_fdf_data(t_fdf *data);
+int		ft_strs_len(char **strs);
 #endif /* FDF_H */
