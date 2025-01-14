@@ -12,31 +12,60 @@
 
 #include "fdf.h"
 
+void	parallel(t_fdf *data, t_point *p)
+{
+	int		prev_x;
+	int		prev_y;
+	double	angle;
+
+	angle = data->screen->angle;
+	prev_x = p->x;
+	prev_y = p->y;
+	p->x = prev_x * cos(angle) + prev_y * cos(angle + 2) + p->z * cos(angle - 2);
+	p->y = prev_x * sin(angle) + prev_y * sin(angle + 2) + p->z * sin(angle - 2);
+}
+
+void	conic(t_fdf *data, t_point *p)
+{
+	int		prev_x;
+	int		prev_y;
+	double	angle;
+
+	angle = data->screen->angle;
+	prev_x = p->x;
+	prev_y = p->y;
+	p->x = prev_x * cos(angle) + prev_y * cos(angle + 2) + p->z * cos(angle - 2);
+	p->y = prev_x * sin(angle) + prev_y * sin(angle + 2) + p->z * sin(angle - 2);
+}
 void	isometric(t_fdf *data, t_point *p)
 {
-	int	prev_x;
-	int	prev_y;
+	int		prev_x;
+	int		prev_y;
+	double	angle;
 
+	angle = data->screen->angle;
 	prev_x = p->x;
 	prev_y = p->y;
-	p->x = (prev_x - prev_y) * cos(data->screen->angle);
-	p->y = (prev_x + prev_y) * sin(data->screen->angle) - p->z;
+	p->x = prev_x * cos(angle) + prev_y * cos(angle + 2) + p->z * cos(angle - 2);
+	p->y = prev_x * sin(angle) + prev_y * sin(angle + 2) + p->z * sin(angle - 2);
 }
-void	rotate(t_fdf *data, t_point *p)
+void	_rotate(t_fdf *data, t_point *p)
 {
 	int	prev_x;
 	int	prev_y;
+	int	prev_z;
 
 	prev_x = p->x;
 	prev_y = p->y;
-	/* Rotation of the x axis */
-	p->y = prev_y * cos(data->screen->alpha) + p->z * sin(data->screen->alpha);
-	p->z = p->z * cos(data->screen->alpha) + prev_y * sin(data->screen->alpha);
-	/*Rotationof the y ordinate */
-	p->x = prev_x * cos(data->screen->beta) + p->z * sin(data->screen->beta);
-	p->z = p->z * cos(data->screen->beta) + prev_x * sin(data->screen->beta);
-	/*Rotationof the y altitude */
-	p->x = prev_x * cos(data->screen->gamma) + prev_y * sin(data->screen->gamma);
+	prev_z = p->z;
+	p->y = prev_y * cos(data->screen->alpha) - prev_z * sin(data->screen->alpha);
+	p->z = prev_z * cos(data->screen->alpha) + prev_y * sin(data->screen->alpha);
+	prev_y = p->y;
+	prev_z = p->z;
+	p->x = prev_x * cos(data->screen->beta) + prev_z * sin(data->screen->beta);
+	p->z = prev_z * cos(data->screen->beta) - prev_x * sin(data->screen->beta);
+	prev_x = p->x;
+	p->x = prev_x * cos(data->screen->gamma) - prev_y * sin(data->screen->gamma);
 	p->y = prev_y * cos(data->screen->gamma) + prev_x * sin(data->screen->gamma);
 }
 
@@ -47,8 +76,13 @@ t_point	project(t_fdf *data, t_point p)
 	p.z *= data->screen->zoom / data->screen->z_div;
 	p.x -= (data->cols * data->screen->zoom) / 2;
 	p.y -= (data->rows * data->screen->zoom) / 2;
-	rotate(data, &p);
-	isometric(data, &p);
+	_rotate(data, &p);
+	if (data->screen->projection == CONIC)
+		conic(data, &p);
+	else if (data->screen->projection == PARALLEL)
+		parallel(data, &p);
+	else
+		isometric(data, &p);
 	p.x += (WIDTH - MENU_WIDTH) / 2 + data->screen->offset_x;
 	p.y += (HEIGHT + data->rows * data->screen->zoom) / 2 + data->screen->offset_y;
 	return (p);

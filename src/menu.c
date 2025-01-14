@@ -13,11 +13,19 @@
 #include "fdf.h"
 #include "mlx.h"
 
+void	menu_info(t_fdf *data)
+{
+	data->menu->top_margin = HEIGHT / 6;
+	data->menu->left_margin = MENU_WIDTH / 8;
+}
 void	draw_menu(t_fdf *data)
 {
 	int	x;
 	int	y;
+	int	t_margin;
+	int	l_margin;
 
+	menu_info(data);
 	y = 0;
 	while (y < HEIGHT)
 	{
@@ -29,9 +37,10 @@ void	draw_menu(t_fdf *data)
 		}
 		y++;
 	}
+	t_margin = data->menu->top_margin;
+	l_margin = data->menu->left_margin;
 	mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->menu->img_ptr->img, 0, 0);
-	// mlx_set_font(data->mlx_ptr, data->win_ptr, "FiraCode Nerd Font");
-	mlx_string_put(data->mlx_ptr, data->win_ptr, 20, 20, TEXT, "FDF");
-	mlx_string_put(data->mlx_ptr, data->win_ptr, 20, 50, TEXT, "ROTATE");
-	mlx_string_put(data->mlx_ptr, data->win_ptr, 20, 80, TEXT, "PROJECT");
+	mlx_string_put(data->mlx_ptr, data->win_ptr, l_margin, t_margin + 20, TEXT, "FDF");
+	mlx_string_put(data->mlx_ptr, data->win_ptr, l_margin, t_margin + 50, TEXT, "ROTATE");
+	mlx_string_put(data->mlx_ptr, data->win_ptr, l_margin, t_margin + 80, TEXT, "PROJECT");
 }

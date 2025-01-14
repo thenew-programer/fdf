@@ -19,23 +19,17 @@ void	free_fdf_data(t_fdf *data)
 	if (data)
 	{
 		if (data->mlx_ptr)
-			free(data->mlx_ptr);
+			free(data->mlx_ptr), data->mlx_ptr = NULL;
 		if (data->win_ptr)
-			free(data->win_ptr);
-		if (data->img_ptr)
-			free(data->img_ptr);
+			free(data->win_ptr), data->win_ptr = NULL;
 		if (data->w_title)
-			free(data->w_title);
+			free(data->w_title), data->w_title = NULL;
 		if (data->map)
 			free_map(data->map, data);
 		if (data->screen)
-			free(data->screen);
-		if (data->menu)
-		{
-			if (data->menu->img_ptr)
-				free(data->menu->img_ptr);
-			free(data->menu);
-		}
+			free(data->screen), data->screen = NULL;
+		if (data->keys)
+			free(data->keys), data->keys = NULL;
 		free(data);
 	}
 }
@@ -50,10 +44,11 @@ t_fdf	*init(void)
 	data->mlx_ptr = NULL;
 	data->win_ptr = NULL;
 	data->img_ptr = NULL;
-	data->w_title = NULL;
 	data->screen = NULL;
 	data->menu = NULL;
 	data->map = NULL;
+	data->keys = NULL;
+	data->w_title = NULL;
 	data->cols = 0;
 	data->rows = 0;
 	return (data);
@@ -75,7 +70,6 @@ int	main(int ac, char **av)
 	printf("Map Width = %d\nMap Height = %d\n", data->cols, data->rows);
 	init_graphics(data);
 	draw_menu(data);
-	mlx_loop_hook(data->mlx_ptr, render, data);
 	mlx_loop(data->mlx_ptr);
 	return (0);
 }

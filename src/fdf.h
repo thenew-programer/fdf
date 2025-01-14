@@ -6,7 +6,7 @@
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/11 18:57:45 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/13 15:01:14 by ybouryal         ###   ########.fr       */
+/*   Updated: 2025/01/14 10:33:30 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,12 @@
 # include <fcntl.h>
 # include <math.h>
 # include <errno.h>
+# include <X11/keysym.h>
 
-# define WIDTH	1300
-# define HEIGHT	700
+# define WIDTH		1300
+# define HEIGHT		700
 # define MENU_WIDTH	WIDTH / 6
+# define PI			22.0 / 7.0
 
 typedef enum e_bool
 {
@@ -42,6 +44,13 @@ typedef enum e_projection
 	CONIC
 }	t_projection;
 
+typedef enum e_xevent
+{
+	ON_KEYDOWN = 2,
+	ON_KEYUP = 3,
+	ON_DESTROY = 17,
+}	t_xevent;
+
 typedef struct s_img_data
 {
 	char	*addr;
@@ -54,34 +63,15 @@ typedef struct s_img_data
 typedef struct s_menu_data
 {
 	t_img_data	*img_ptr;
+	int			top_margin;
+	int			left_margin;
 }	t_menu;
 
 typedef struct s_keys
 {
 	int	PK_shift;
 	int	PK_ctrl;
-	/* Rotate */
-	int	PK_r;
-	/* Rotate */
-	int	PK_x;
-	int	PK_y;
-	int	PK_z;
-	/* Zoom */
-	int	PK_plus;
-	int	PK_minus;
-	/* Movement */
-	int	PK_a;
-	int	PK_w;
-	int	PK_s;
-	int	PK_d;
-	int	PK_up;
-	int	PK_down;
-	int	PK_right;
-	int	PK_left;
-	/* Projections */
-	int	PK_i;
-	int	PK_p;
-	int	PK_c;
+	int	PK_key;
 }	t_keys;
 
 typedef struct s_point
@@ -94,7 +84,6 @@ typedef struct s_point
 
 typedef struct s_screen
 {
-
 	t_projection	projection;
 	int				zoom;
 	double			alpha;
@@ -114,10 +103,10 @@ typedef struct s_fdf
 	t_screen	*screen;
 	t_keys		*keys;
 	t_menu		*menu;
+	t_point		**map;
 	char		*w_title;
 	int			cols;
 	int			rows;
-	t_point		**map;
 }	t_fdf;
 
 /* Functions Prototype */
@@ -148,6 +137,9 @@ void	init_graphics(t_fdf *data);
 /* ------------------------------hooks.c------------------------------------ */
 int		close_window(t_fdf *data);
 int		keyhook(int keycode, t_fdf *data);
+int		key_press(int keycode, t_fdf *data);
+int		key_release(int keycode, t_fdf *data);
+int		mouse_exit(t_fdf *data);
 int		mousehook(int button, int x, int y, t_fdf *data);
 
 /* ------------------------------main.c--------------------------------------*/
@@ -164,4 +156,14 @@ t_point	project(t_fdf *data, t_point p);
 
 /* ----------------------------renderer.c------------------------------------*/
 int		render(t_fdf *data);
+
+/* ----------------------------geometry.c------------------------------------*/
+void	rotate(t_fdf *data);
+void	translate(t_fdf *data);
+void	projection(t_fdf *data);
+void	zoom(t_fdf *data);
+void	flatten(t_fdf *data);
+void	reset(t_fdf *data);
+int		close_window(t_fdf *data);
+
 #endif /* FDF_H */

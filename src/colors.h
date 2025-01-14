@@ -13,8 +13,8 @@
 #ifndef COLORS_H
 # define COLORS_H
 
-# define TEXT			0xF6B17A
-# define BACKGROUND		0x424769
-# define MENU_COLOR		0x2D3250
+# define TEXT			0xEBD3F8
+# define BACKGROUND		0x1A1A1D
+# define MENU_COLOR		0x6A1E55
 
 #endif /* COLORS_H */

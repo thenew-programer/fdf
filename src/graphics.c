@@ -6,24 +6,32 @@
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 09:13:50 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/12 09:13:56 by ybouryal         ###   ########.fr       */
+/*   Updated: 2025/01/14 10:41:10 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "err_msg.h"
 #include "fdf.h"
-#include "mlx.h"
 
 void	free_graphics(t_fdf *data)
 {
 	if (data)
 	{
-		if (data->menu->img_ptr)
-			if (data->menu->img_ptr->img)
-				mlx_destroy_image(data->mlx_ptr, data->menu->img_ptr->img);
+		if (data->menu)
+		{
+			if (data->menu->img_ptr)
+			{
+				if (data->menu->img_ptr->img)
+					mlx_destroy_image(data->mlx_ptr, data->menu->img_ptr->img);
+				free(data->menu->img_ptr);
+			}
+			free(data->menu);
+		}
 		if (data->img_ptr)
+		{
 			if (data->img_ptr->img)
 				mlx_destroy_image(data->mlx_ptr, data->img_ptr->img);
+			free(data->img_ptr);
+		}
 		if (data->win_ptr)
 		{
 			mlx_destroy_window(data->mlx_ptr, data->win_ptr);
@@ -50,8 +58,6 @@ void	init_screen(t_fdf *data)
 	screen->beta = 0;
 	screen->gamma = 0;
 	screen->z_div = 1;
-	// screen->offset_x = ((WIDTH - MENU_WIDTH) - screen->zoom * data->cols) / 2;
-	// screen->offset_y = (HEIGHT - screen->zoom * data->rows) / 2;
 	screen->offset_x = 0;
 	screen->offset_y = 0;
 	screen->angle = 0.523599;
@@ -87,7 +93,18 @@ t_menu	*init_menu(t_fdf *data)
 	if (!menu)
 		die(MALLOC_ERR, data);
 	menu->img_ptr = init_img(data, MENU_WIDTH, HEIGHT);
+	data->menu = menu;
 	return (menu);
+}
+
+void	init_keys(t_fdf *data)
+{
+	data->keys = (t_keys *)malloc(sizeof(t_keys));
+	if (!data->keys)
+		die(MALLOC_ERR, data);
+	data->keys->PK_key = 0;
+	data->keys->PK_ctrl = 0;
+	data->keys->PK_shift = 0;
 }
 
 void	init_graphics(t_fdf *data)
@@ -99,10 +116,11 @@ void	init_graphics(t_fdf *data)
 	if (!data->win_ptr)
 		die(MLX_WINDOW_ERR, data);
 	data->img_ptr = init_img(data, WIDTH - MENU_WIDTH, HEIGHT);
-	data->menu = init_menu(data);
-	mlx_key_hook(data->win_ptr, keyhook, data);
-	mlx_do_key_autorepeaton(data->mlx_ptr);
-	/* close display when clicking on the x button */
-	mlx_hook(data->win_ptr, 17, 0, close_window, data);
+	init_menu(data);
 	init_screen(data);
+	init_keys(data);
+	mlx_hook(data->win_ptr, ON_KEYDOWN, 1L, key_press, data);
+	mlx_hook(data->win_ptr, ON_KEYUP, (1L << 1), key_release, data);
+	mlx_hook(data->win_ptr, ON_DESTROY, 0, mouse_exit, data);
+	mlx_loop_hook(data->mlx_ptr, render, data);
 }
