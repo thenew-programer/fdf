@@ -9,3 +9,6 @@
 - Parse the map in the file
 - Store the parsed map in a linked list
 - Init the display, the window and the image
+## All done
+## What's needs to be added
+Fix color gradient
