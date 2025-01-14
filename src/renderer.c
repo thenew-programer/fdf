@@ -12,15 +12,23 @@
 
 #include "fdf.h"
 
+int	draw(t_fdf *data)
+{
+	draw_shape(data);
+	draw_menu(data);
+	return (0);
+}
+
 int	render(t_fdf *data)
 {
 	zoom(data);
 	rotate(data);
 	translate(data);
 	projection(data);
-	flatten(data);
+	altitude(data);
+	depth(data);
 	reset(data);
 	close_window(data);
-	draw(data);
+	draw_shape(data);
 	return (0);
 }

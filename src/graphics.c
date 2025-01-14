@@ -6,41 +6,11 @@
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/12 09:13:50 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/14 10:41:10 by ybouryal         ###   ########.fr       */
+/*   Updated: 2025/01/14 21:27:59 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-
-void	free_graphics(t_fdf *data)
-{
-	if (data)
-	{
-		if (data->menu)
-		{
-			if (data->menu->img_ptr)
-			{
-				if (data->menu->img_ptr->img)
-					mlx_destroy_image(data->mlx_ptr, data->menu->img_ptr->img);
-				free(data->menu->img_ptr);
-			}
-			free(data->menu);
-		}
-		if (data->img_ptr)
-		{
-			if (data->img_ptr->img)
-				mlx_destroy_image(data->mlx_ptr, data->img_ptr->img);
-			free(data->img_ptr);
-		}
-		if (data->win_ptr)
-		{
-			mlx_destroy_window(data->mlx_ptr, data->win_ptr);
-			data->win_ptr = NULL;
-		}
-		if (data->mlx_ptr)
-			mlx_destroy_display(data->mlx_ptr);
-	}
-}
 
 void	init_screen(t_fdf *data)
 {
@@ -62,12 +32,12 @@ void	init_screen(t_fdf *data)
 	screen->offset_y = 0;
 	screen->angle = 0.523599;
 	screen->projection = ISOMETRIC;
+	screen->depth = 0;
 	data->screen = screen;
 }
 
 t_img_data	*init_img(t_fdf *data, int width, int height)
 {
-
 	t_img_data	*img_ptr;
 
 	img_ptr = (t_img_data *)malloc(sizeof(t_img_data));
@@ -77,9 +47,9 @@ t_img_data	*init_img(t_fdf *data, int width, int height)
 	if (!img_ptr->img)
 		die(MLX_IMAGE_ERR, data);
 	img_ptr->addr = mlx_get_data_addr(img_ptr->img,
-										&img_ptr->bpp,
-										&img_ptr->line_length,
-										&img_ptr->endian);
+			&img_ptr->bpp,
+			&img_ptr->line_length,
+			&img_ptr->endian);
 	return (img_ptr);
 }
 
@@ -102,9 +72,9 @@ void	init_keys(t_fdf *data)
 	data->keys = (t_keys *)malloc(sizeof(t_keys));
 	if (!data->keys)
 		die(MALLOC_ERR, data);
-	data->keys->PK_key = 0;
-	data->keys->PK_ctrl = 0;
-	data->keys->PK_shift = 0;
+	data->keys->pk_key = 0;
+	data->keys->pk_ctrl = 0;
+	data->keys->pk_shift = 0;
 }
 
 void	init_graphics(t_fdf *data)
@@ -121,6 +91,7 @@ void	init_graphics(t_fdf *data)
 	init_keys(data);
 	mlx_hook(data->win_ptr, ON_KEYDOWN, 1L, key_press, data);
 	mlx_hook(data->win_ptr, ON_KEYUP, (1L << 1), key_release, data);
-	mlx_hook(data->win_ptr, ON_DESTROY, 0, mouse_exit, data);
+	mlx_hook(data->win_ptr, ON_EXPOSE, (1L << 15), draw, data);
+	mlx_hook(data->win_ptr, ON_DESTROY, 0, cross_exit, data);
 	mlx_loop_hook(data->mlx_ptr, render, data);
 }
