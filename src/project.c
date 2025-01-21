@@ -77,7 +77,7 @@ t_point	project(t_fdf *data, t_point p)
 {
 	p.x *= data->screen->zoom;
 	p.y *= data->screen->zoom;
-	p.z *= data->screen->zoom / data->screen->z_div;
+	p.z *= (int)(data->screen->zoom / data->screen->z_div);
 	p.x -= (data->cols * data->screen->zoom) / 2;
 	p.y -= (data->rows * data->screen->zoom) / 2;
 	_rotate(data, &p);

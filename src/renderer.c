@@ -21,14 +21,17 @@ int	draw(t_fdf *data)
 
 int	render(t_fdf *data)
 {
-	zoom(data);
-	rotate(data);
-	translate(data);
-	projection(data);
-	altitude(data);
-	depth(data);
-	reset(data);
-	close_window(data);
-	draw_shape(data);
+	if (data->keys->pk_key)
+	{
+		zoom(data);
+		rotate(data);
+		translate(data);
+		projection(data);
+		altitude(data);
+		depth(data);
+		reset(data);
+		close_window(data);
+		draw_shape(data);
+	}
 	return (0);
 }

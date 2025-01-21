@@ -18,9 +18,15 @@ void	altitude(t_fdf *data)
 
 	step = 0.2;
 	if (data->keys->pk_key == XK_f && data->keys->pk_shift)
-		data->screen->z_div -= step;
+	{
+		if (data->screen->z_div > 1)
+			data->screen->z_div -= step;
+	}
 	else if (data->keys->pk_key == XK_f)
-		data->screen->z_div += step;
+	{
+		if (data->screen->z_div < 5)
+			data->screen->z_div += step;
+	}
 }
 
 void	reset(t_fdf *data)
@@ -41,6 +47,17 @@ void	reset(t_fdf *data)
 		data->screen->z_div = 1.0;
 		data->screen->depth = 0;
 	}
+}
+
+void	zoom(t_fdf *data)
+{
+	int	step;
+
+	step = 1;
+	if (data->keys->pk_key == XK_minus)
+		data->screen->zoom -= step;
+	if (data->keys->pk_key == '=' && data->keys->pk_shift)
+		data->screen->zoom += step;
 }
 
 int	close_window(t_fdf *data)

@@ -1,6 +1,6 @@
 CC			= cc
 CFLAGS		= -Wall -Werror -Wextra -I $(HEAD) -O3
-LDFLAGS		= -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -lmlx_Linux -L/usr/lib -lXext -lX11 -lm -lz
+LDFLAGS		= -L$(LIBFT_DIR) -lft -L/usr/lib -lXext -lX11 -lm -lz -L /usr/include/minilibx-linux -lmlx_Linux
 RM			= rm -rf
 
 SRCS_DIR	= src

@@ -50,21 +50,11 @@ void	depth(t_fdf *data)
 	}
 }
 
-void	translate(t_fdf *data)
+void	adjust_translate(t_fdf *data)
 {
 	int	w;
 	int	h;
-	int	step;
 
-	step = 10;
-	if (data->keys->pk_key == XK_w || data->keys->pk_key == XK_Up)
-		data->screen->offset_y -= step;
-	if (data->keys->pk_key == XK_s || data->keys->pk_key == XK_Down)
-		data->screen->offset_y += step;
-	if (data->keys->pk_key == XK_a || data->keys->pk_key == XK_Left)
-		data->screen->offset_x -= step;
-	if (data->keys->pk_key == XK_d || data->keys->pk_key == XK_Right)
-		data->screen->offset_x += step;
 	w = WIDTH - MENU_WIDTH;
 	h = HEIGHT;
 	if (data->screen->offset_x < -w / 2)
@@ -77,6 +67,33 @@ void	translate(t_fdf *data)
 		data->screen->offset_y -= h;
 }
 
+void	translate(t_fdf *data)
+{
+	int	step;
+
+	step = 10;
+	if (data->keys->pk_key == XK_w || data->keys->pk_key == XK_Up)
+	{
+		data->screen->offset_y -= step;
+		adjust_translate(data);
+	}
+	if (data->keys->pk_key == XK_s || data->keys->pk_key == XK_Down)
+	{
+		data->screen->offset_y += step;
+		adjust_translate(data);
+	}
+	if (data->keys->pk_key == XK_a || data->keys->pk_key == XK_Left)
+	{
+		data->screen->offset_x -= step;
+		adjust_translate(data);
+	}
+	if (data->keys->pk_key == XK_d || data->keys->pk_key == XK_Right)
+	{
+		data->screen->offset_x += step;
+		adjust_translate(data);
+	}
+}
+
 void	projection(t_fdf *data)
 {
 	if (data->keys->pk_key == XK_i)
@@ -85,33 +102,4 @@ void	projection(t_fdf *data)
 		data->screen->projection = CONIC;
 	if (data->keys->pk_key == XK_p)
 		data->screen->projection = PARALLEL;
-}
-
-void	zoom(t_fdf *data)
-{
-	int	min_z;
-	int	max_z;
-	int	max_cz;
-	int	step;
-
-	step = 1;
-	min_z = 1;
-	max_z = 15;
-	max_cz = 30;
-	if (data->keys->pk_key == XK_minus)
-		if (data->screen->zoom > min_z)
-			data->screen->zoom -= step;
-	if (data->keys->pk_key == '=' && data->keys->pk_shift)
-	{
-		if (data->screen->projection != CONIC)
-		{
-			if (data->screen->zoom < max_z)
-				data->screen->zoom += step;
-		}
-		else
-		{
-			if (data->screen->zoom < max_cz)
-				data->screen->zoom += step;
-		}
-	}
 }

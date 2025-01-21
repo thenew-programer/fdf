@@ -13,7 +13,8 @@
 #ifndef FDF_H
 # define FDF_H
 
-# include "mlx.h"
+// # include "mlx.h"
+# include "/usr/include/minilibx-linux/mlx.h"
 # include "colors.h"
 # include "err_msg.h"
 # include "libft.h"
@@ -26,8 +27,8 @@
 # include <errno.h>
 # include <X11/keysym.h>
 
-# define WIDTH		1300
-# define HEIGHT		700
+# define WIDTH		1920
+# define HEIGHT		1080
 # define MENU_WIDTH	220
 # define PI			3.142857142857143
 
@@ -158,12 +159,12 @@ int		render(t_fdf *data);
 /* ----------------------------bonus_1.c------------------------------------*/
 void	rotate(t_fdf *data);
 void	translate(t_fdf *data);
+void	depth(t_fdf *data);
 void	projection(t_fdf *data);
-void	zoom(t_fdf *data);
 
 /* ----------------------------bonus_2.c------------------------------------*/
 void	altitude(t_fdf *data);
-void	depth(t_fdf *data);
+void	zoom(t_fdf *data);
 void	reset(t_fdf *data);
 int		close_window(t_fdf *data);
 int		cross_exit(t_fdf *data);
