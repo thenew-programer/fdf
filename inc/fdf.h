@@ -13,7 +13,6 @@
 #ifndef FDF_H
 # define FDF_H
 
-// # include "mlx.h"
 # include "mlx.h"
 # include "colors.h"
 # include "err_msg.h"
