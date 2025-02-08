@@ -39,7 +39,6 @@ int	main(int ac, char **av)
 	data = init_fdf();
 	if (ac < 2)
 		die(USAGE_ERR, data);
-	check_file_ext(av[1], data);
 	if (!check_map(av[1], data))
 		die(MAP_FORMAT_ERR, data);
 	data->map = parser(av[1], data);

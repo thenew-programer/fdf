@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "fdf.h"
+#include "libft.h"
 
 t_point	**parser(char *filename, t_fdf *data)
 {
@@ -47,6 +48,7 @@ t_bool	check_map(char *filename, t_fdf *data)
 	int		coor[2];
 
 	fd = open_file(filename, data);
+	check_file_ext(filename, data);
 	line = get_next_line(fd);
 	if (!line)
 		die(MAP_EMPTY, data);
@@ -70,23 +72,14 @@ t_bool	check_map(char *filename, t_fdf *data)
 
 t_bool	check_file_ext(char *filename, t_fdf *data)
 {
-	char	**strs;
-	int		i;
-	int		len;
+	char	*ext;
 
-	if (!filename)
+	ext = ft_strrchr(filename, '.');
+	if (ext == filename)
 		die(FILE_EXT_ERR, data);
-	strs = ft_split(filename, '.');
-	if (!strs || !*strs)
+	else if (*(ext - 1) == '/')
 		die(FILE_EXT_ERR, data);
-	i = 0;
-	while (strs[i + 1])
-		i++;
-	len = ft_strlen(strs[i]);
-	if (ft_strncmp(strs[i], "fdf", len) != 0)
-	{
-		free_split_strs(strs, NULL);
+	else if (ft_strncmp(ext, EXTENSION, ft_strlen(ext)) != 0)
 		die(FILE_EXT_ERR, data);
-	}
-	return (free_split_strs(strs, NULL), TRUE);
+	return (TRUE);
 }

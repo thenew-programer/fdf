@@ -30,6 +30,7 @@
 # define HEIGHT		1080
 # define MENU_WIDTH	220
 # define PI			3.142857142857143
+# define EXTENSION	".fdf"
 
 typedef enum e_bool
 {
