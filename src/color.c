@@ -12,18 +12,6 @@
 
 #include "fdf.h"
 
-int	p_color(t_point *p1, t_point *p2)
-{
-	if (p1->color != TEXT)
-		return (p1->color);
-	if ((p1->z == 0 && p2->z != 0) || (p1->z != 0 && p2->z == 0))
-		return (DIAGTEXT);
-	else if (p1->z != 0)
-		return (UPTEXT);
-	else
-		return (TEXT);
-}
-
 int	get_color(char **strs, int x)
 {
 	int		color;

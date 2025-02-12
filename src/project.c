@@ -12,32 +12,12 @@
 
 #include "fdf.h"
 
-void	parallel(t_fdf *data, t_point *p)
-{
-	(void)data;
-	(void)p;
-	return ;
-}
-
-void	conic(t_fdf *data, t_point *p)
-{
-	int		depth;
-
-	reset(data);
-	depth = data->screen->depth;
-	if (p->z + depth == 0)
-		return ;
-	p->x /= (p->z + depth);
-	p->y /= (p->z + depth);
-}
-
 void	isometric(t_fdf *data, t_point *p)
 {
 	int		prev_x;
 	int		prev_y;
 	double	angle;
 
-	reset(data);
 	angle = data->screen->angle;
 	prev_x = p->x;
 	prev_y = p->y;
@@ -81,12 +61,7 @@ t_point	project(t_fdf *data, t_point p)
 	p.x -= (data->cols * data->screen->zoom) / 2;
 	p.y -= (data->rows * data->screen->zoom) / 2;
 	_rotate(data, &p);
-	if (data->screen->projection == ISOMETRIC)
-		isometric(data, &p);
-	else if (data->screen->projection == CONIC)
-		conic(data, &p);
-	else if (data->screen->projection == PARALLEL)
-		parallel(data, &p);
+	isometric(data, &p);
 	p.x += (WIDTH - MENU_WIDTH) / 2 + data->screen->offset_x;
 	p.y += (HEIGHT + data->rows * data->screen->zoom) / 2
 		+ data->screen->offset_y;

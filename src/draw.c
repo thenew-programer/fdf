@@ -37,7 +37,7 @@ void	draw_line_segment(t_fdf *data, t_point *p1, t_point *p2, t_point *delta)
 	err[0] = delta->x - delta->y;
 	while (p1->x != p2->x || p1->y != p2->y)
 	{
-		pixel_put(data->img_ptr, p1->x, p1->y, p_color(p1, p2));
+		pixel_put(data->img_ptr, p1->x, p1->y, p1->color);
 		err[1] = err[0] * 2;
 		if (err[1] > -delta->y)
 		{
@@ -100,7 +100,7 @@ void	draw_shape(t_fdf *data)
 			x++;
 		}
 		mlx_put_image_to_window(data->mlx_ptr, data->win_ptr,
-			data->img_ptr->img, MENU_WIDTH, 0);
+			data->img_ptr->img, 0, 0);
 		y++;
 	}
 }

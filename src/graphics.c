@@ -86,7 +86,6 @@ void	init_graphics(t_fdf *data)
 	if (!data->win_ptr)
 		die(MLX_WINDOW_ERR, data);
 	data->img_ptr = init_img(data, WIDTH - MENU_WIDTH, HEIGHT);
-	init_menu(data);
 	init_screen(data);
 	init_keys(data);
 	mlx_hook(data->win_ptr, ON_KEYDOWN, 1L, key_press, data);

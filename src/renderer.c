@@ -15,23 +15,12 @@
 int	draw(t_fdf *data)
 {
 	draw_shape(data);
-	draw_menu(data);
 	return (0);
 }
 
 int	render(t_fdf *data)
 {
-	if (data->keys->pk_key)
-	{
-		zoom(data);
-		rotate(data);
-		translate(data);
-		projection(data);
-		altitude(data);
-		depth(data);
-		reset(data);
+	if (data->keys->pk_key == XK_Escape)
 		close_window(data);
-		draw_shape(data);
-	}
 	return (0);
 }

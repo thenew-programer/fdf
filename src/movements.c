@@ -1,23 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   colors.h                                           :+:      :+:    :+:   */
+/*   bonus_2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybouryal <ybouryal@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/11 18:59:09 by ybouryal          #+#    #+#             */
-/*   Updated: 2025/01/11 18:59:45 by ybouryal         ###   ########.fr       */
+/*   Created: 2025/01/14 21:39:24 by ybouryal          #+#    #+#             */
+/*   Updated: 2025/01/14 21:39:31 by ybouryal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COLORS_H
-# define COLORS_H
+#include "fdf.h"
 
-# define MENU_TEXT		0xFAF7F0
-# define TEXT			0x344C64
-# define UPTEXT			0x57A6A1
-# define DIAGTEXT		0x577B8D
-# define BACKGROUND		0x181823
-# define MENU_COLOR		0x577D86
+int	close_window(t_fdf *data)
+{
+	if (data->keys->pk_key == XK_Escape)
+	{
+		free_fdf_data(data);
+		exit(0);
+	}
+	return (0);
+}
 
-#endif /* COLORS_H */
+int	cross_exit(t_fdf *data)
+{
+	data->keys->pk_key = XK_Escape;
+	return (0);
+}

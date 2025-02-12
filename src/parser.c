@@ -47,8 +47,7 @@ t_bool	check_map(char *filename, t_fdf *data)
 	char	**strs;
 	int		coor[2];
 
-	fd = open_file(filename, data);
-	check_file_ext(filename, data);
+	(1) && (fd = open_file(filename, data), check_file_ext(filename, data));
 	line = get_next_line(fd);
 	if (!line)
 		die(MAP_EMPTY, data);
