@@ -14,8 +14,8 @@
 # define FDF_H
 
 # include "mlx.h"
-# include "colors.h"
-# include "err_msg.h"
+# include "colors_bonus.h"
+# include "err_msg_bonus.h"
 # include "libft.h"
 
 # include <stdio.h>
@@ -26,11 +26,9 @@
 # include <errno.h>
 # include <X11/keysym.h>
 
-// # define WIDTH		1920
-// # define HEIGHT		1080
-# define WIDTH		1000
-# define HEIGHT		600	
-# define MENU_WIDTH	0
+# define WIDTH		1920
+# define HEIGHT		1080
+# define MENU_WIDTH	220
 # define PI			3.142857142857143
 # define EXTENSION	".fdf"
 
