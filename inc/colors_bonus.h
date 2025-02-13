@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COLORS_H
-# define COLORS_H
+#ifndef COLORS_BONUS_H
+# define COLORS_BONUS_H
 
 # define MENU_TEXT		0xFAF7F0
 # define TEXT			0x344C64

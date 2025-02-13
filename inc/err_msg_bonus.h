@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ERR_MSG_H
-# define ERR_MSG_H
+#ifndef ERR_MSG_BONUS_H
+# define ERR_MSG_BONUS_H
 
 # define USAGE_ERR			"Usage: ./fdf <filename>"
 # define MAP_PARSING_ERR	"Error while parsing Map"
