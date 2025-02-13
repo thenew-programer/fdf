@@ -73,7 +73,7 @@ t_bool	check_file_ext(char *filename, t_fdf *data)
 	char	*ext;
 
 	ext = ft_strrchr(filename, '.');
-	if (ext == filename)
+	if (ext == filename || !ext)
 		die(FILE_EXT_ERR, data);
 	else if (*(ext - 1) == '/')
 		die(FILE_EXT_ERR, data);
