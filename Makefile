@@ -16,9 +16,7 @@ BOLD		:= $(shell tput bold);
 RESET		:= $(shell tput -Txterm sgr0)
 
 CC			= cc
-#CFLAGS		= -Wall -Werror -Wextra -I $(HEAD) -I /usr/include/minilibx-linux -O3
-CFLAGS		= -Wall -Werror -Wextra -I $(HEAD) -O3
-#LDFLAGS		= -L$(LIBFT_DIR) -lft -L/usr/lib -lXext -lX11 -lm -lz -L /usr/include/minilibx-linux -lmlx_Linux
+CFLAGS		= -Wall -Werror -Wextra -I$(HEAD) -I$(MLX_DIR) -O3
 LDFLAGS		= -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -l$(MLXLIB) -L/usr/lib -lXext -lX11 -lm -lz
 RM			= rm -rf
 
@@ -29,8 +27,7 @@ BOBJS_DIR	= obj_bonus
 LIBFT_DIR	= libft
 LIBFT		= $(LIBFT_DIR)/libft.a
 MLXLIB		= mlx_Linux
-MLX_DIR		= mlx_linux
-# MLX_DIR		= /usr/include/minilibx-linux
+MLX_DIR		= /usr/include/minilibx-linux
 HEAD		= inc
 
 MFILES		= movements.c color.c dealloc.c err.c hooks.c main.c project.c \
