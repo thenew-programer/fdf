@@ -68,10 +68,10 @@ void	free_split_strs(char **strs, char *line)
 {
 	int	i;
 
+	if (line)
+		free(line);
 	i = 0;
 	while (strs[i])
 		free(strs[i++]);
 	free(strs);
-	if (line)
-		free(line);
 }
