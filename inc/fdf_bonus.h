@@ -13,11 +13,11 @@
 #ifndef FDF_BONUS_H
 # define FDF_BONUS_H
 
-# include "mlx.h"
 # include "colors_bonus.h"
 # include "err_msg_bonus.h"
 # include "libft.h"
 
+# include <minilibx-linux/mlx.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
