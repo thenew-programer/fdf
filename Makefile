@@ -16,7 +16,7 @@ BOLD		:= $(shell tput bold);
 RESET		:= $(shell tput -Txterm sgr0)
 
 CC			= cc
-CFLAGS		= -Wall -Werror -Wextra -I$(HEAD) -I$(MLX_DIR) -O3
+CFLAGS		= -Wall -Werror -Wextra -I$(HEAD) -O3
 LDFLAGS		= -L$(LIBFT_DIR) -lft -L$(MLX_DIR) -l$(MLXLIB) -L/usr/lib -lXext -lX11 -lm -lz
 RM			= rm -rf
 
