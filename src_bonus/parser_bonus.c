@@ -45,26 +45,26 @@ t_bool	check_map(char *filename, t_fdf *data)
 	char	*line;
 	char	**strs;
 	int		coor[2];
+	int		is_rectangular;
 
 	(1) && (fd = open_file(filename, data), check_file_ext(filename, data));
 	line = get_next_line(fd);
 	if (!line)
 		die(MAP_EMPTY, data);
-	strs = ft_split(line, ' ');
-	coor[0] = ft_strs_len(strs);
-	free_split_strs(strs, NULL);
-	coor[1] = 0;
+	(1) && (strs = ft_split(line, ' '), coor[0] = ft_strs_len(strs));
+	(1) && (free_split_strs(strs, NULL), coor[1] = 0);
+	is_rectangular = 1;
 	while (line && ++coor[1] >= 0)
 	{
 		strs = ft_split(line, ' ');
-		if (ft_strs_len(strs) != coor[0])
-			return (free_split_strs(strs, line), FALSE);
+		(ft_strs_len(strs) != coor[0]) && (is_rectangular = 0);
 		free_split_strs(strs, line);
 		line = get_next_line(fd);
 	}
-	data->cols = coor[0];
-	data->rows = coor[1];
 	close(fd);
+	if (!is_rectangular)
+		return (FALSE);
+	(1) && (data->cols = coor[0], data->rows = coor[1]);
 	return (TRUE);
 }
 
